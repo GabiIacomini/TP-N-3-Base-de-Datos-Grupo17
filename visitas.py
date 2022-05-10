@@ -10,12 +10,14 @@ yyyymmddThh:mm:ss
 
 """
 
+
 class Persona:
     def __init__(self, dni, apellido, nombre='', movil=''):
         self.dni = dni
         self.nombre = nombre
         self.apellido = apellido
         self.movil= movil
+        
 
 
 def ingresa_visita(persona):
@@ -37,12 +39,40 @@ def ingresa_visita(persona):
         print(q)
         conn.execute(q)
         conn.commit()
+
+        
+
+    destino = input("Ingrese destino: ")
+
+    horaActual = datetime.datetime.now().replace(microsecond=0).isoformat()
+
+    q = f"""INSERT INTO ingresos_egresos (dni, fechahora_in, destino)
+            VALUES ('{persona.dni}',
+                    '{horaActual}',
+                    '{destino}');"""
+    conn.execute(q)
+    conn.commit()
+    
     conn.close()
     
 
 def egresa_visita (dni):
     """Coloca fecha y hora de egreso al visitante con dni dado"""
-    pass
+    conn = sqlite3.connect('recepcion.db')
+
+    q = f"""SELECT dni FROM personas WHERE dni = '{dni}'"""
+
+    resu = conn.execute(q)
+
+    horaActual = datetime.datetime.now().replace(microsecond=0).isoformat()
+
+    if resu.fetchone():
+        q = f"""UPDATE ingresos_egresos set fechahora_out =
+                '{horaActual}' WHERE dni = '{dni}';"""
+        conn.execute(q)
+        conn.commit()
+    
+    conn.close()
 
 
 def lista_visitantes_en_institucion ():
@@ -93,12 +123,8 @@ def iniciar():
 if __name__ == '__main__':
     iniciar()
 
-    """
-    p = Persona('28123456', 'Álavarez', 'Ana', '02352-456789')
-
-    ingresa_visita(p)
-    """
     
+        
     """
     doc = input("Igrese dni> ")
     apellido = input("Igrese apellido> ")
