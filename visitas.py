@@ -88,32 +88,29 @@ def lista_visitantes_en_institucion ():
     conn.close()
 
 
-def busca_visitantes(fecha_desde, fecha_hasta, destino, dni):
+def busca_visitantes(fecha_desde, fecha_hasta, destino, dni ):
     """ busca visitantes segun criterios """
-
     conn = sqlite3.connect('recepcion.db')
 
     cond = ""
-
-    base = ' SELECT * FROM ingresos_egresos WHERE ; '
+    base =  "SELECT * FROM ingresos_egresos "
 
     if dni != '':
-        cond += f'dni = {dni} and '
+        cond += f'dni = {dni} AND'
     elif fecha_desde != '':
-        cond += f'fechahora_in = {fecha_desde} and '
+        cond += f'fechahora_in = {fecha_desde} AND'
     elif fecha_hasta != '':
-        cond += f'fechahora_out = {fecha_hasta} and ' 
+        cond += f'fechahora_out = {fecha_hasta} AND'
     elif destino != '':
-        cond += f'destino = {destino} and '
+        cond += f'destino = {destino} AND'
 
-    base += cond
-
+    base += ' WHERE ' + cond
     base = base[:-3]
+    f = conn.execute(base)
+    
+    for fila in f:
+        print(fila)
 
-    resu = conn.execute(base)
-
-    for fila in resu:
-        print(fila)    
     conn.close()
 
 
