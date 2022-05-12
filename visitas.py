@@ -3,11 +3,8 @@ import datetime
 
 """
 datetime.datetime.now().replace(microsecond=0).isoformat()
-
 devuelve fecha hora actual en formato ISO8601 simple
-
 yyyymmddThh:mm:ss
-
 """
 
 
@@ -93,21 +90,24 @@ def busca_visitantes(fecha_desde, fecha_hasta, destino, dni ):
     conn = sqlite3.connect('recepcion.db')
 
     cond = ""
-    base =  "SELECT * FROM ingresos_egresos "
+    base =  "SELECT personas.* FROM personas INNER JOIN ingresos_egresos ON personas.dni = ingresos_egresos.dni"
 
     if dni != '':
         cond += f'dni = {dni} AND'
-    elif fecha_desde != '':
-        cond += f'fechahora_in = {fecha_desde} AND'
-    elif fecha_hasta != '':
-        cond += f'fechahora_out = {fecha_hasta} AND'
-    elif destino != '':
-        cond += f'destino = {destino} AND'
+    
+    if fecha_desde != '':
+        cond += f'fechahora_in = "{fecha_desde}" AND'
+    
+    if fecha_hasta != '':
+        cond += f'fechahora_out = "{fecha_hasta}" AND'
+    
+    if destino != '':
+        cond += f'destino = "{destino}" AND'
 
     base += ' WHERE ' + cond
     base = base[:-3]
     f = conn.execute(base)
-    
+
     for fila in f:
         print(fila)
 
@@ -123,7 +123,6 @@ def iniciar():
                      nombre   TEXT,
                      apellido TEXT  NOT NULL,
                      movil    TEXT  NOT NULL
-
            );'''
 
     conn.execute(qry)
@@ -135,7 +134,6 @@ def iniciar():
                      fechahora_in TEXT  NOT NULL,
                      fechahora_out TEXT,
                      destino TEXT
-
            );'''
 
     conn.execute(qry)
@@ -151,11 +149,9 @@ if __name__ == '__main__':
     apellido = input("Igrese apellido> ")
     nombre = input("nombre> ")
     movil = input("móvil > ")
-
     p = Persona(doc, apellido, nombre, movil)
     
     ingresa_visita(p)
     """
     
     # lista_visitantes_en_institucion()
-    
